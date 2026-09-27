@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { GlobalAudioManager } from "@/components/GlobalAudioManager";
 
 export const metadata: Metadata = {
   title: "Happy Birthday Shivi",
@@ -24,7 +23,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#02071a] flex flex-col items-center justify-start overflow-x-hidden">
-        <GlobalAudioManager />
         {children}
       </body>
     </html>
