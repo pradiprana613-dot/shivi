@@ -18,11 +18,6 @@ function getWebpUrl(frameNum: number): string {
   return `/radhe-opt/${frameNum}.webp`;
 }
 
-function getPngUrl(frameNum: number): string {
-  const padded = frameNum.toString().padStart(3, "0");
-  return `/radhe/ezgif-frame-${padded}.png`;
-}
-
 export function DoorOpeningCanvas({
   isActive,
   fps = 30,
@@ -44,7 +39,7 @@ export function DoorOpeningCanvas({
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  // Helper to load a single frame with WebP preference and PNG fallback
+  // Helper to load a single frame from optimized WebP
   // Note: synchronous onload assignment without await img.decode() prevents mobile WebKit deadlock
   const fetchFrame = (frameIndex: number): Promise<HTMLImageElement | null> => {
     if (frameIndex < 0 || frameIndex >= TOTAL_FRAMES) {
@@ -79,24 +74,8 @@ export function DoorOpeningCanvas({
       };
 
       img.onerror = () => {
-        // Fallback to original PNG if WebP fails
-        const fallbackImg = new Image();
-        fallbackImg.src = getPngUrl(frameNum);
-        fallbackImg.onload = () => {
-          framesRef.current[frameIndex] = fallbackImg;
-          loadingStatusRef.current[frameIndex] = false;
-          if (frameIndex === 0 && canvasRef.current && !isPlayingRef.current) {
-            const ctx = canvasRef.current.getContext("2d");
-            if (ctx) {
-              ctx.drawImage(fallbackImg, 0, 0, 1080, 1920);
-            }
-          }
-          resolve(fallbackImg);
-        };
-        fallbackImg.onerror = () => {
-          loadingStatusRef.current[frameIndex] = false;
-          resolve(null);
-        };
+        loadingStatusRef.current[frameIndex] = false;
+        resolve(null);
       };
     });
   };
